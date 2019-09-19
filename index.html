@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Facebook | Graph API</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script src="js/facebook.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container" style="margin-top: 100px;margin-left:500px;">  
+        <div id="status"></div><br>
+        <textarea type="text" id='post' name='doPost' placeholder="Write here........" style="border-radius:12px; width: 400px;background-color: aqua ;"></textarea><br><br>
+        <button onclick="getInfo()" class="btn btn-primary">Get Info</button>
+        <button onclick="post()" class="btn btn-success" >Post</button>
+        <button onclick="schedulerPost()" id="schedulerPost" class="btn btn-info" >Schedule post</button>
+        <button onclick="upload()" class="btn btn-warning">Photo upload</button>
+       
+    </div>
+
+</body>
+</html>
