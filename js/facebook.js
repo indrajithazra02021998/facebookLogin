@@ -2,41 +2,41 @@ var access_token = null;
 var ppt=null;
 var permanent_user_token = localStorage.getItem('permanent_user_token');
 var permanent_page_access_token=localStorage.getItem('permanent_page_access_token');
-//var ppt1="EAAG3O7pwx9UBADOXUAZAW1HWe5aZCs1HfLZCefG9YgHVLXPgNr24xF8yTtETvpZAXD9iY6mVVoHXMbp1hkYTBxO0jOGjKh8uIsZBL1uyXpOKIufSHbNubq9N8OGKaog1BrEnOpzX4nflY54py5fnCcGa8krweDay7waxNWElQsz4c3rxah0wg";
-//var ppt_new="EAAG3O7pwx9UBABPZAQ77gSDncfLTjAdMZCsZCZAd76jFgCWwzpIa4d2OUhQDuiCCZB7efQ0gQhNlFRDqM0ODx34j9E9E2M7mW6pe2O5t9r63FeIrz8wTsWAO4tZAcA7Io7OHJNuK3yarz1mph6NrdUZCfW6kvV5aKPWYvTD9IpgQrLloyeeVuWc"
+
 var message=null;
-console.log(permanent_page_access_token);
+console.log( " user token-->"+permanent_user_token);
 
 window.fbAsyncInit = function () {
     FB.init({
-        appId: '482942135617493',
+        appId: '552802925464394',
         xfbml: true,
-        version: 'v4.0'
+        version: 'v4.0',
+         cookie:true
     });
-
-    if(permanent_user_token !=null){
+    
+    if(this.permanent_user_token !=null && this.permanent_page_access_token!=null){
         console.log('already connected..')
-     readyToPost();
+      
+       readyToPost();
     }else{
        
         FB.getLoginStatus(function (response) {
+            console.log(response)
             if (response.status === 'connected') {
-                access_token = FB.getAccessToken();
-               
+               this. access_token = FB.getAccessToken();
+                console.log(this.access_token+"----->")
                 getPermanentAccessToken();
             } else {
                 FB.login(function() {
-                   
                     var authResp = FB.getAuthResponse();
-                    access_token = authResp.accessToken;
+                   this. access_token = authResp.accessToken;
                     console.log('just logged in')
+                    console.log(this.access_token)
                     getPermanentAccessToken();
                 }, { scope: 'manage_pages,publish_pages,publish_to_groups' });
             } 
         });
-    }
-
-    
+    }   
 };
 
 (function (d, s, id) {
@@ -50,16 +50,21 @@ window.fbAsyncInit = function () {
 function getPermanentAccessToken(){
 
     // fetch permament user_token 
-
-      $.ajax({url: "https://graph.facebook.com/v2.10/oauth/access_token?grant_type=fb_exchange_token&client_id=482942135617493&client_secret=60cd2cd2d4497e6a1f83af885a5b7c09&fb_exchange_token="+access_token, success: function(result){
+    $.ajax({
+      url: "https://graph.facebook.com/v2.10/oauth/access_token?grant_type=fb_exchange_token&client_id=552802925464394&client_secret=672ad66e9b7ddb51cc326b708be751fb&fb_exchange_token="+this.access_token, 
+      success: function(result){
+          if(result.error){
+              console.log('error has occurred..')
+          }
       
-    console.log( JSON.stringify(result));
-    localStorage.setItem('permanent_user_token',result.access_token)
+     console.log( "result------------>"+JSON.stringify(result));
+     console.log(result.access_token)
+     console.log( localStorage.setItem('permanent_user_token',result.access_token))
       
       }});
-         // fetch permament page_access_token 
-
-      $.ajax({url: "https://graph.facebook.com/v2.10/515145435935448/accounts?access_token="+permanent_user_token, success: function(result){
+    
+    // this is  to fetch permament user access_token
+      $.ajax({url: "https://graph.facebook.com/v2.10/521621015287890/accounts?access_token="+this.permanent_user_token, success: function(result){
       
         console.log( JSON.stringify(result));
         localStorage.setItem('permanent_page_access_token',result.data[2].access_token)
@@ -75,21 +80,12 @@ function getScheduleTime() {
 }
 function readyToPost(){
 message = document.getElementById('post').value;
+console.log(message)
  return message;
 }
 
 function schedulerPost() {
     var pageId = '114221043295873';
-    // $.ajax({url: "https://graph.facebook.com/v2.10/515145435935448/accounts?access_token=EAAG3O7pwx9UBAPTV5z5HluJYFuhJjbmf81us9xZCxyExdkPv6IdIEnSxSuvnfZCw9CIvwTIuddVyvOZBK3EUQCHQ9dKBhPtlOVBJUpYHtayWkGTwVLE4rWZAImS0QTTnllFEXZApB02M5NlBGiSZB1k0o0I6mKYc5x9aBu7CndggZDZD", success: function(result){
-    //     for( i in result.data){
-    //         console.log(result.data[i].id)
-    //     if(result.data[i].id==pageId){
-    //         ppt=result.data[i].access_token;
-    //         console.log(ppt)
-    //     }
-    //     }
-        
-    //     }});
     FB.api('/' + pageId + '/feed', 'post', {
          message: readyToPost(),
         "scheduled_publish_time": getScheduleTime(),
@@ -114,10 +110,8 @@ function getInfo() {
         document.getElementById('status').innerHTML = 'user name is:' + response.name + 'and id is:' + response.id;
     });
 }
-// posting on user timeline
-function post() {
-    //var p_accessToken = "EAAdZCyZCorabkBAIB9gWNczUDYNtMrqMB6TcdZBhRlcMZCdtq0JI6ZCyH3XP3ukryVzs8h6w7SCLZADrMpJIDLpVxUJPebj4sZBFNRbhKVMh1TKZCITgMDZAMa4U9Gg32AdBz5nk9xSAsjYbSdaXoZAyyxqcqwV6oIyzF336NBEJgFWEOzgyTBU9dUr4nY3uZAgr50ZD"
 
+function post() {
     // do post here....
     var pageId = '114221043295873'; // facebook page id from page info
     FB.api('/' + pageId + '/feed', 'post', {
@@ -126,8 +120,8 @@ function post() {
     }, function (info) {
         document.getElementById('status').innerHTML = 'posted successfully..'
         document.getElementById('post').style.visibility = 'hidden';
+        console.log(localStorage.getItem('permanent_page_access_token'))
         console.log(info);
-        
     });
 
 }
